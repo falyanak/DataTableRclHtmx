@@ -1,0 +1,10 @@
+# .gitignore pour .NET
+[Bb]in/
+[Oo]bj/
+.vscode/
+.devcontainer/local-settings.json
+*.user
+*.suo
+*.db
+# Sauf le dossier .devcontainer spécifique
+!.devcontainer/devcontainer.json

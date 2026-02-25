@@ -1,0 +1,10 @@
+<div class="container mt-5">
+    <h2 class="mb-4">Gestion des Produits (1M lignes)</h2>
+    
+    <div id="table-container" 
+         hx-get="/Product/GetTable" 
+         hx-trigger="load" 
+         hx-ext="morphdom">
+        <div class="text-center p-5">Initialisation...</div>
+    </div>
+</div>

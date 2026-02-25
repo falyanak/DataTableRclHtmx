@@ -1,0 +1,9 @@
+﻿@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+
+@* Indispensable pour utiliser hx-get, hx-target, etc., si vous utilisez des TagHelpers HTMX *@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@* Importe vos propres modèles de la RCL pour qu'ils soient reconnus dans _SmartTable.cshtml *@
+@using DataTable.Rcl.Models

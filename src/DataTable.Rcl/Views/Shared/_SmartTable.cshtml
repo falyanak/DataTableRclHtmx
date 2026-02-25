@@ -1,0 +1,115 @@
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@model DataTable.Rcl.Models.GenericTableViewModel<dynamic>
+
+@{
+    int totalPages = Math.Max(1, Model.TotalPages);
+    int currentPage = Math.Clamp(Model.CurrentPage, 1, totalPages);
+    int blockSize = 10;
+    int prevBlock = Math.Max(1, currentPage - blockSize);
+    int nextBlock = Math.Min(totalPages, currentPage + blockSize);
+    
+    // On prépare la base des URLs pour éviter les répétitions
+    string queryBase = $"&pageSize={Model.PageSize}&search={Model.Search}";
+}
+
+<div id="smart-table-wrapper" hx-ext="morphdom">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex gap-2 align-items-center">
+            <select name="pageSize" class="form-select form-select-sm w-auto"
+                    hx-get="@Model.BaseApiUrl" hx-target="@Model.TargetId">
+                <option value="10" selected="@(Model.PageSize == 10)">10 lignes</option>
+                <option value="25" selected="@(Model.PageSize == 25)">25 lignes</option>
+                <option value="50" selected="@(Model.PageSize == 50)">50 lignes</option>
+                <option value="100" selected="@(Model.PageSize == 100)">100 lignes</option>
+            </select>
+
+            <input type="text" name="search" value="@Model.Search" 
+                   hx-get="@Model.BaseApiUrl" hx-target="@Model.TargetId" 
+                   hx-include="[name='pageSize']"
+                   hx-trigger="keyup changed delay:1000ms" class="form-control form-control-sm" placeholder="Rechercher..." />
+        </div>
+
+        @* EXPORT AGNOSTIQUE *@
+        @if (!string.IsNullOrEmpty(Model.ExportApiUrl))
+        {
+            <a href="@Model.ExportApiUrl?search=@Model.Search" class="btn btn-sm btn-danger shadow-sm">
+                <i class="bi bi-file-earmark-pdf"></i> Export PDF
+            </a>
+        }
+    </div>
+
+  <table class="table table-hover align-middle border shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                @foreach (var col in Model.Columns) {
+                    // RÉFLEXION GÉNÉRIQUE : On prend le type de l'item réel s'il existe
+                    string displayName = col;
+                    if (Model.Items.Any()) {
+                        var firstItem = Model.Items.First();
+                        var prop = ((object)firstItem).GetType().GetProperty(col);
+                        displayName = prop?.GetCustomAttribute<DisplayAttribute>()?.Name ?? col;
+                    }
+
+                    <th style="cursor:pointer" 
+                        hx-get="@Model.BaseApiUrl?sortBy=@col&isAsc=@(!Model.IsAsc)&pageSize=@Model.PageSize&search=@Model.Search"
+                        hx-target="@Model.TargetId">
+                        @displayName @(Model.SortBy == col ? (Model.IsAsc ? "↑" : "↓") : "")
+                    </th>
+                }
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items) {
+                var type = item.GetType();
+                var id = type.GetProperty("Id")?.GetValue(item);
+                <tr>
+                    @foreach (var col in Model.Columns) {
+                        <td onclick="window.location='/Product/Details/@id'" style="cursor:pointer">
+                            @{
+                                var val = type.GetProperty(col)?.GetValue(item);
+                                if (val is decimal p) { @p.ToString("C2") }
+                                else if (val is DateTime dt) { @dt.ToString("dd/MM/yyyy") }
+                                else { @val }
+                            }
+                        </td>
+                    }
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a href="/Product/Details/@id" class="btn btn-outline-primary"><i class="bi bi-eye"></i></a>
+                            <button class="btn btn-outline-danger" hx-delete="/Product/Delete/@id" hx-target="closest tr"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @* CORRECTION : Ajout du hx-target sur le nav pour les boutons de pagination *@
+    <nav hx-target="@Model.TargetId">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <button class="page-link" hx-get="@Model.BaseApiUrl?page=1@queryBase"><i class="bi bi-chevron-bar-left"></i></button>
+            </li>
+            <li class="page-item @(currentPage <= blockSize ? "disabled" : "")">
+                <button class="page-link" hx-get="@Model.BaseApiUrl?page=@prevBlock@queryBase"><i class="bi bi-chevron-double-left"></i></button>
+            </li>
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <button class="page-link" hx-get="@Model.BaseApiUrl?page=@(currentPage - 1)@queryBase"><i class="bi bi-chevron-left"></i></button>
+            </li>
+            
+            <li class="page-item disabled"><span class="page-link text-dark fw-bold">@currentPage / @totalPages</span></li>
+
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <button class="page-link" hx-get="@Model.BaseApiUrl?page=@(currentPage + 1)@queryBase"><i class="bi bi-chevron-right"></i></button>
+            </li>
+            <li class="page-item @(currentPage > totalPages - blockSize ? "disabled" : "")">
+                <button class="page-link" hx-get="@Model.BaseApiUrl?page=@nextBlock@queryBase"><i class="bi bi-chevron-double-right"></i></button>
+            </li>
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <button class="page-link" hx-get="@Model.BaseApiUrl?page=@totalPages@queryBase"><i class="bi bi-chevron-bar-right"></i></button>
+            </li>
+        </ul>
+    </nav>
+</div>

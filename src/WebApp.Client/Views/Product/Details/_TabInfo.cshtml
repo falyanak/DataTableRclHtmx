@@ -1,0 +1,9 @@
+@model WebApp.Client.Models.Product
+<div class="p-2">
+    <h5 class="mb-3">Fiche Technique</h5>
+    <ul class="list-group">
+        <li class="list-group-item"><strong>Catégorie :</strong> @Model.Category</li>
+        <li class="list-group-item"><strong>Description :</strong> @Model.Description</li>
+        <li class="list-group-item"><strong>Prix :</strong> @Model.Price.ToString("C")</li>
+    </ul>
+</div>

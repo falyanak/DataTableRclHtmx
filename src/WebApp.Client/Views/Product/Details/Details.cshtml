@@ -1,0 +1,74 @@
+@model WebApp.Client.Models.Product
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="/Product/Index">Produits</a></li>
+                    <li class="breadcrumb-item active">Détails</li>
+                </ol>
+            </nav>
+            <h2 class="text-primary fw-bold mb-0">@Model.Name</h2>
+            <span class="badge bg-info text-dark">ID: #@Model.Id</span>
+        </div>
+        <a href="/Product/Index" class="btn btn-outline-secondary shadow-sm">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="p-3 bg-light border rounded shadow-sm">
+                <h5 class="border-bottom pb-2">Description du produit</h5>
+                <p class="text-secondary">@Model.Name</p> @* Assurez-vous que 'Description' existe dans votre modèle *@
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 bg-white border rounded shadow-sm text-center">
+                <h6 class="text-muted">Prix de vente</h6>
+                <h3 class="text-success">@Model.Price.ToString("C")</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-bottom-0">
+            <ul class="nav nav-pills card-header-pills" id="productTabs">
+                <li class="nav-item">
+                    <button class="nav-link active tab-btn" 
+                            hx-get="/Product/GetTabContent?id=@Model.Id&tab=info" 
+                            hx-target="#tab-body"
+                            hx-push-url="false">
+                        <i class="bi bi-info-circle"></i> Informations
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link tab-btn" 
+                            hx-get="/Product/GetTabContent?id=@Model.Id&tab=history" 
+                            hx-target="#tab-body"
+                            hx-push-url="false">
+                        <i class="bi bi-clock-history"></i> Historique
+                    </button>
+                </li>
+            </ul>
+        </div>
+        
+        <div id="tab-body" class="card-body border-top">
+            @* Chargement initial du premier onglet *@
+            @await Html.PartialAsync("/Views/Product/Details/_TabInfo.cshtml", Model)
+        </div>
+    </div>
+</div>
+
+<script>
+    // Correction pour la gestion des onglets HTMX
+    document.addEventListener('htmx:beforeSend', function(evt) {
+        if (evt.target.classList.contains('tab-btn')) {
+            // Désactiver tous les onglets
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            // Activer celui qui a été cliqué
+            evt.target.classList.add('active');
+        }
+    });
+</script>
