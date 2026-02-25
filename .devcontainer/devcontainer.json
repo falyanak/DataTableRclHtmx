@@ -1,29 +1,29 @@
 {
-    "name": "C# .NET 8 & HTMX Project",
-    "image": "mcr.microsoft.com/devcontainers/dotnet:8.0",
-    "features": {
-        // Ajoute des utilitaires réseau et git
-        "ghcr.io/devcontainers/features/common-utils:1": {
-            "configureZshAsDefaultShell": true
-        }
+  "name": "C# .NET 8 & HTMX Project",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:1": {
+      "configureZshAsDefaultShell": true
     },
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "ms-dotnettools.csdevkit",      // Pack complet pour C#
-                "ms-dotnettools.csharp",        // Débogage et IntelliSense
-                "fernando-perez.htmx-tags",     // Support syntaxique HTMX
-                "visualstudioexptteam.vscodeintellicode" // Aide IA au code
-            ]
-        }
-    },
-    // Ports utilisés par ASP.NET Core
-    "forwardPorts": [5000, 5001],
-    "portsAttributes": {
-        "5001": {
-            "protocol": "https"
-        }
-    },
-    // Commande exécutée après la création du container
-    "postCreateCommand": "dotnet restore"
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/dotnet:8.0": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp",
+        "fernando-perez.htmx-tags",
+        "visualstudioexptteam.vscodeintellicode"
+      ]
+    }
+  },
+  "forwardPorts": [5000, 5001],
+  "portsAttributes": {
+    "5001": {
+      "protocol": "https"
+    }
+  },
+  // On chaîne : Restauration .NET -> Install NPM -> Compilation TS initiale
+  "postCreateCommand": "dotnet restore && cd src/WebApp.Client && npm install && npx tsc --watch"
 }

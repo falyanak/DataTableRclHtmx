@@ -8,3 +8,5 @@
 *.db
 # Sauf le dossier .devcontainer spécifique
 !.devcontainer/devcontainer.json
+wwwroot/js/main.js
+wwwroot/js/*.map

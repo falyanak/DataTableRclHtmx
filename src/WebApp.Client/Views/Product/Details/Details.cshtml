@@ -61,14 +61,6 @@
     </div>
 </div>
 
-<script>
-    // Correction pour la gestion des onglets HTMX
-    document.addEventListener('htmx:beforeSend', function(evt) {
-        if (evt.target.classList.contains('tab-btn')) {
-            // Désactiver tous les onglets
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            // Activer celui qui a été cliqué
-            evt.target.classList.add('active');
-        }
-    });
-</script>
+@section Scripts {
+    <script src="~/js/main.js" type="module"></script>
+}
