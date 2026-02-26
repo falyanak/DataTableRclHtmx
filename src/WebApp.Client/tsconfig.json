@@ -4,24 +4,12 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "outDir": "./wwwroot/js",
-    // MODIFICATION : On remonte à la racine de la solution
-    "baseUrl": "../../", 
-    "paths": {
-      // Les chemins sont maintenant relatifs à la racine de la solution
-      "@rcl/*": ["src/DataTable.Rcl/Scripts/src/*"],
-      "@client/*": ["src/WebApp.Client/Scripts/src/*"]
-    },
-    // On fusionne les dossiers virtuellement pour le compilateur
-    "rootDirs": [
-      "src/WebApp.Client/Scripts/src",
-      "src/DataTable.Rcl/Scripts/src"
-    ],
+    "baseUrl": ".",
     "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
   "include": [
-    "Scripts/src/**/*.ts",
-    "../../DataTable.Rcl/Scripts/src/**/*.ts"
+    "Scripts/src/**/*.ts"
   ]
 }

@@ -4,7 +4,7 @@
 export const initRclTablePersistence = (): void => {
     const STORAGE_KEY = `rcl_select_${window.location.pathname}`;
 
-    // 1. Gestion du clic
+    // 1. Gestion du clic (Délégation sur le body pour survivre aux swaps HTMX)
     document.body.addEventListener('click', (evt: MouseEvent) => {
         const target = evt.target as HTMLElement;
         const row = target.closest('tr[data-id]');
@@ -20,14 +20,13 @@ export const initRclTablePersistence = (): void => {
 
     // 2. Restauration après mise à jour HTMX
     document.body.addEventListener('htmx:afterOnLoad', (evt: any) => {
-        // On vérifie si la cible du swap est notre wrapper de table
         if (evt.detail.target.classList.contains('rcl-table-wrapper')) {
             const savedId = localStorage.getItem(STORAGE_KEY);
             if (savedId) applyHighlight(savedId);
         }
     });
 
-    // 3. Premier chargement
+    // 3. Initialisation au premier chargement
     const initialId = localStorage.getItem(STORAGE_KEY);
     if (initialId) applyHighlight(initialId);
 };
