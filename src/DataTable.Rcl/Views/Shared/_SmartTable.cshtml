@@ -9,11 +9,12 @@
     int prevBlock = Math.Max(1, currentPage - blockSize);
     int nextBlock = Math.Min(totalPages, currentPage + blockSize);
     
-    // On prépare la base des URLs pour éviter les répétitions
-    string queryBase = $"&pageSize={Model.PageSize}&search={Model.Search}";
+    string queryBase = $"&pageSize={Model.PageSize}&search={Model.Search}&sortBy={Model.SortBy}&isAsc={Model.IsAsc}";
 }
 
-<div id="smart-table-wrapper" hx-ext="morphdom">
+@* AJOUT : rcl-table-wrapper pour le pilotage TypeScript *@
+<div id="@Model.TargetId.Replace("#", "")" class="rcl-table-wrapper" hx-ext="morphdom">
+    
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="d-flex gap-2 align-items-center">
             <select name="pageSize" class="form-select form-select-sm w-auto"
@@ -30,7 +31,6 @@
                    hx-trigger="keyup changed delay:1000ms" class="form-control form-control-sm" placeholder="Rechercher..." />
         </div>
 
-        @* EXPORT AGNOSTIQUE *@
         @if (!string.IsNullOrEmpty(Model.ExportApiUrl))
         {
             <a href="@Model.ExportApiUrl?search=@Model.Search" class="btn btn-sm btn-danger shadow-sm">
@@ -39,11 +39,11 @@
         }
     </div>
 
-  <table class="table table-hover align-middle border shadow-sm">
+    @* AJOUT : rcl-table pour le ciblage CSS/TS *@
+    <table class="table rcl-table table-hover align-middle border shadow-sm">
         <thead class="table-dark">
             <tr>
                 @foreach (var col in Model.Columns) {
-                    // RÉFLEXION GÉNÉRIQUE : On prend le type de l'item réel s'il existe
                     string displayName = col;
                     if (Model.Items.Any()) {
                         var firstItem = Model.Items.First();
@@ -64,9 +64,11 @@
             @foreach (var item in Model.Items) {
                 var type = item.GetType();
                 var id = type.GetProperty("Id")?.GetValue(item);
-                <tr>
+                
+                @* MODIFICATION : Ajout du data-id pour la persistance *@
+                <tr data-id="@id" style="cursor:pointer">
                     @foreach (var col in Model.Columns) {
-                        <td onclick="window.location='/Product/Details/@id'" style="cursor:pointer">
+                        <td onclick="window.location='@Model.DetailsUrl@id'">
                             @{
                                 var val = type.GetProperty(col)?.GetValue(item);
                                 if (val is decimal p) { @p.ToString("C2") }
@@ -75,10 +77,18 @@
                             }
                         </td>
                     }
-                    <td class="text-end">
+                    <td class="text-end" onclick="event.stopPropagation();">
                         <div class="btn-group btn-group-sm">
-                            <a href="/Product/Details/@id" class="btn btn-outline-primary"><i class="bi bi-eye"></i></a>
-                            <button class="btn btn-outline-danger" hx-delete="/Product/Delete/@id" hx-target="closest tr"><i class="bi bi-trash"></i></button>
+                            @* MODIFICATION : Utilisation des URLs du Model *@
+                            <a href="@Model.DetailsUrl@id" class="btn btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <button class="btn btn-outline-danger" 
+                                    hx-delete="@Model.DeleteApiUrl@id" 
+                                    hx-target="closest tr"
+                                    hx-confirm="Êtes-vous sûr de vouloir supprimer cet élément ?">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -86,7 +96,6 @@
         </tbody>
     </table>
 
-    @* CORRECTION : Ajout du hx-target sur le nav pour les boutons de pagination *@
     <nav hx-target="@Model.TargetId">
         <ul class="pagination justify-content-center">
             <li class="page-item @(currentPage == 1 ? "disabled" : "")">

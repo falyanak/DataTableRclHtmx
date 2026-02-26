@@ -1,29 +1,21 @@
 {
   "name": "C# .NET 8 & HTMX Project",
-  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0-bookworm",
   "features": {
-    "ghcr.io/devcontainers/features/common-utils:1": {
-      "configureZshAsDefaultShell": true
-    },
-    "ghcr.io/devcontainers/features/node:1": {},
-    "ghcr.io/devcontainers/features/dotnet:8.0": {}
+    // On force l'installation de Node.js proprement via la Feature officielle
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20" 
+    }
   },
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-dotnettools.csdevkit",
         "ms-dotnettools.csharp",
-        "fernando-perez.htmx-tags",
-        "visualstudioexptteam.vscodeintellicode"
+        "fernando-perez.htmx-tags"
       ]
     }
   },
-  "forwardPorts": [5000, 5001],
-  "portsAttributes": {
-    "5001": {
-      "protocol": "https"
-    }
-  },
-  // On chaîne : Restauration .NET -> Install NPM -> Compilation TS initiale
-  "postCreateCommand": "dotnet restore && cd src/WebApp.Client && npm install && npx tsc --watch"
+  // Correction du postCreateCommand : on sépare les étapes pour identifier le coupable
+  "postCreateCommand": "dotnet dev-certs https && dotnet restore && cd src/WebApp.Client && npm install"
 }

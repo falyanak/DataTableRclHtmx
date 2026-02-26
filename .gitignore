@@ -10,3 +10,4 @@
 !.devcontainer/devcontainer.json
 wwwroot/js/main.js
 wwwroot/js/*.map
+.fake

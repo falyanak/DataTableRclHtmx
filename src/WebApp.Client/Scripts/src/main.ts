@@ -1,10 +1,12 @@
 import { initTabHandler } from './handlers/tabHandler';
+// Utilisation de l'alias pour pointer vers la RCL
+//import { initRclTablePersistence } from '../../../DataTable.Rcl/Scripts/src/table-persistence';
+import { initRclTablePersistence } from '@rcl/table-persistence'
 
 const bootstrap = () => {
-    console.log("🚀 Frontend Initialized (TypeScript + HTMX)");
+    console.log("🚀 Frontend Initialized");
     initTabHandler();
-
-    console.log("Test de compilation automatique");
+    initRclTablePersistence();
 };
 
 if (document.readyState === "loading") {

@@ -1,0 +1,39 @@
+/**
+ * Gestion de la persistance de sélection pour la DataTable RCL
+ */
+export const initRclTablePersistence = (): void => {
+    const STORAGE_KEY = `rcl_select_${window.location.pathname}`;
+
+    // 1. Gestion du clic
+    document.body.addEventListener('click', (evt: MouseEvent) => {
+        const target = evt.target as HTMLElement;
+        const row = target.closest('tr[data-id]');
+        
+        if (row) {
+            const id = row.getAttribute('data-id');
+            if (id) {
+                localStorage.setItem(STORAGE_KEY, id);
+                applyHighlight(id);
+            }
+        }
+    });
+
+    // 2. Restauration après mise à jour HTMX
+    document.body.addEventListener('htmx:afterOnLoad', (evt: any) => {
+        // On vérifie si la cible du swap est notre wrapper de table
+        if (evt.detail.target.classList.contains('rcl-table-wrapper')) {
+            const savedId = localStorage.getItem(STORAGE_KEY);
+            if (savedId) applyHighlight(savedId);
+        }
+    });
+
+    // 3. Premier chargement
+    const initialId = localStorage.getItem(STORAGE_KEY);
+    if (initialId) applyHighlight(initialId);
+};
+
+const applyHighlight = (id: string): void => {
+    document.querySelectorAll('.rcl-table tr.table-active').forEach(r => r.classList.remove('table-active'));
+    const row = document.querySelector(`.rcl-table tr[data-id="${id}"]`);
+    if (row) row.classList.add('table-active');
+};
