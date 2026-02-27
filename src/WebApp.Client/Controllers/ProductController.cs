@@ -38,42 +38,6 @@ public partial class ProductController : Controller
         return View("/Views/Product/Details/Details.cshtml", product);
     }
 
-    // [HttpGet]
-    // public IActionResult GetTable(string search, string sortBy, bool isAsc = true, int page = 1, int pageSize = 10)
-    // {
-    //     var query = _db.AsQueryable();
-
-    //     // 1. Filtrage
-    //     if (!string.IsNullOrEmpty(search))
-    //         query = query.Where(p => p.Name.Contains(search, StringComparison.OrdinalIgnoreCase));
-
-    //     // 2. Tri Dynamique (nécessite System.Linq.Dynamic.Core)
-    //     if (!string.IsNullOrEmpty(sortBy))
-    //     {
-    //         string sortOrder = isAsc ? "ascending" : "descending";
-    //         query = query.OrderBy($"{sortBy} {sortOrder}");
-    //     }
-
-    //     // 3. Pagination
-    //     var totalRecords = query.Count();
-    //     var items = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-    //     var viewModel = new GenericTableViewModel<dynamic> {
-    //         Items = items.Cast<dynamic>().ToList(),
-    //         Columns = new List<string> { "Id", "Name", "Category", "Description", "Price", "CreatedAt"},
-    //         CurrentPage = page,
-    //         PageSize = pageSize,
-    //         TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize),
-    //         BaseApiUrl = "/Product/GetTable",
-    //         TargetId = "#smart-table-wrapper",
-    //         Search = search,
-    //         SortBy = sortBy,
-    //         IsAsc = isAsc,
-    //         ExportApiUrl = "/Product/ExportPdf", // URL dédiée pour l'export
-    //     };
-
-    //     return PartialView("_SmartTable", viewModel);
-    // }
 
     [HttpGet]
 public IActionResult GetTable(string search, string sortBy, bool isAsc = true, int page = 1, int pageSize = 10)
@@ -91,7 +55,7 @@ public IActionResult GetTable(string search, string sortBy, bool isAsc = true, i
     var totalRecords = query.Count();
     var items = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-    var viewModel = new GenericTableViewModel<dynamic> {
+    var viewModel = new GenericTableViewModel<dynamic, int> {
         Items = items.Cast<dynamic>().ToList(),
         Columns = new List<string> { "Id", "Name", "Category", "Price", "CreatedAt" },
         CurrentPage = page,

@@ -2,7 +2,7 @@ namespace WebApp.Client.Models;
 
 using System.ComponentModel.DataAnnotations;
 
-public class Product
+public class Product : IEntity<int>
 {
     [Display(Name = "N°")]
     public int Id { get; set; }

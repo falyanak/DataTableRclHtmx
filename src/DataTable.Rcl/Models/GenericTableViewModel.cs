@@ -1,7 +1,10 @@
 namespace DataTable.Rcl.Models
 {
-    public class GenericTableViewModel<T>
-    {
+   public class DataTableViewModel<T, TKey> 
+    where T : IEntity<TKey> 
+    where TKey : IEquatable<TKey>
+{
+       public TKey? SelectedId { get; set; }
         public List<T> Items { get; set; } = new();
         public List<string> Columns { get; set; } = new();
         public int CurrentPage { get; set; }
