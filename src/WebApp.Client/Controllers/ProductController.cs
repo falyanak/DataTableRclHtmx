@@ -55,7 +55,7 @@ public IActionResult GetTable(string search, string sortBy, bool isAsc = true, i
     var totalRecords = query.Count();
     var items = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-    var viewModel = new GenericTableViewModel<dynamic, int> {
+    var viewModel = new DataTableViewModel<dynamic> {
         Items = items.Cast<dynamic>().ToList(),
         Columns = new List<string> { "Id", "Name", "Category", "Price", "CreatedAt" },
         CurrentPage = page,
